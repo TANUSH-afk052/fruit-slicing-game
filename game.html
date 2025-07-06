@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fruit Slice Game (Splash Edition)</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #def3ff, #a2d4f5);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    h1, #score, #lives {
+      text-align: center;
+      margin: 0.5em;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      background: #c2f0ff;
+      overflow: hidden;
+      border-top: 3px solid #000;
+      border-bottom: 3px solid #000;
+      z-index: 1;
+    }
+
+    .fruit {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    }
+
+    .sliced {
+      transform: scale(1.3) rotate(45deg);
+      opacity: 0;
+    }
+
+    .splash-drop {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      opacity: 1;
+      animation: splashAnim 0.5s ease-out forwards;
+    }
+
+    @keyframes splashAnim {
+      to {
+        transform: translate(var(--x), var(--y)) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    #startBtn, #exitBtn {
+      display: inline-block;
+      margin: 10px 10px;
+      padding: 12px 25px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+    }
+
+    #startBtn {
+      background-color: #28a745;
+    }
+
+    #exitBtn {
+      background-color: #dc3545;
+    }
+
+    #swordTrail {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @media (max-width: 768px) {
+      .fruit {
+        width: 50px;
+        height: 50px;
+      }
+      #startBtn, #exitBtn {
+        width: 90%;
+        margin: 10px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>🍉 Fruit Slice (Splash Edition)</h1>
+<div id="score">Score: 0</div>
+<div id="lives">Lives: ❤️❤️❤️</div>
+<button id="startBtn" onclick="startGame()">Start Game</button>
+<button id="exitBtn" onclick="exitGame()" style="display: none;">Exit Game</button>
+<div id="gameArea"></div>
+
+<!-- Sword Trail SVG -->
+<svg id="swordTrail">
+  <path id="trailPath" stroke="red" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+
+<!-- Sound -->
+<audio id="sliceSound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+
+<script>
+  const fruitColors = ['red', 'orange', 'yellow', 'green', 'purple', 'blue'];
+  const gameArea = document.getElementById("gameArea");
+  const scoreDisplay = document.getElementById("score");
+  const livesDisplay = document.getElementById("lives");
+  const sliceSound = document.getElementById("sliceSound");
+  const trailPath = document.getElementById("trailPath");
+
+  let score = 0;
+  let lives = 3;
+  let gameInterval;
+  let gameRunning = false;
+  let lastSliceTime = 0;
+  let trailPoints = [];
+
+  function updateLives() {
+    livesDisplay.innerHTML = "Lives: " + "❤️".repeat(lives);
+  }
+
+  function createFruit() {
+    const fruit = document.createElement("div");
+    fruit.classList.add("fruit");
+    const color = fruitColors[Math.floor(Math.random() * fruitColors.length)];
+    fruit.style.background = color;
+    fruit.style.left = Math.random() * (window.innerWidth - 60) + "px";
+    fruit.style.top = "-60px";
+
+    let fallSpeed = Math.random() * 2 + 2;
+    gameArea.appendChild(fruit);
+
+    const fall = setInterval(() => {
+      let top = parseFloat(fruit.style.top);
+      fruit.style.top = top + fallSpeed + "px";
+
+      if (top > gameArea.offsetHeight) {
+        fruit.remove();
+        clearInterval(fall);
+        loseLife();
+      }
+    }, 16);
+
+    function slice(e) {
+      let now = Date.now();
+      let timeDiff = now - lastSliceTime;
+      lastSliceTime = now;
+
+      score += timeDiff < 500 ? 2 : 1;
+      scoreDisplay.textContent = "Score: " + score;
+
+      sliceSound.currentTime = 0;
+      sliceSound.play();
+
+      fruit.classList.add("sliced");
+      createSplash(parseFloat(fruit.style.left) + 30, parseFloat(fruit.style.top) + 30, color);
+      setTimeout(() => fruit.remove(), 200);
+      clearInterval(fall);
+    }
+
+    fruit.addEventListener("click", slice);
+    fruit.addEventListener("touchstart", slice);
+  }
+
+  function createSplash(x, y, color) {
+    for (let i = 0; i < 10; i++) {
+      const drop = document.createElement("div");
+      drop.classList.add("splash-drop");
+      drop.style.background = color;
+      drop.style.left = `${x}px`;
+      drop.style.top = `${y}px`;
+
+      // Random burst direction
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 50 + 10;
+      const dx = Math.cos(angle) * distance;
+      const dy = Math.sin(angle) * distance;
+
+      drop.style.setProperty('--x', `${dx}px`);
+      drop.style.setProperty('--y', `${dy}px`);
+      gameArea.appendChild(drop);
+
+      setTimeout(() => drop.remove(), 500);
+    }
+  }
+
+  function loseLife() {
+    lives--;
+    updateLives();
+    if (lives <= 0) {
+      endGame("Game Over! Your score: " + score);
+    }
+  }
+
+  function startGame() {
+    if (gameRunning) return;
+    gameRunning = true;
+    lives = 3;
+    score = 0;
+    lastSliceTime = 0;
+    trailPoints = [];
+    updateLives();
+    scoreDisplay.textContent = "Score: 0";
+    document.getElementById("exitBtn").style.display = "inline-block";
+
+    gameInterval = setInterval(createFruit, 700);
+
+    setTimeout(() => {
+      if (gameRunning) endGame("⏰ Time's up! Your score: " + score);
+    }, 30000);
+  }
+
+  function endGame(message) {
+    clearInterval(gameInterval);
+    gameRunning = false;
+    document.getElementById("exitBtn").style.display = "none";
+    alert(message);
+    [...document.querySelectorAll('.fruit')].forEach(f => f.remove());
+    trailPoints = [];
+  }
+
+  function exitGame() {
+    if (confirm("Are you sure you want to exit the game?")) {
+      endGame("Game exited. Your score: " + score);
+    }
+  }
+
+  function detectSwipe(x, y) {
+    trailPoints.push({ x, y, time: Date.now() });
+
+    const elements = document.elementsFromPoint(x, y);
+    elements.forEach(el => {
+      if (el.classList.contains('fruit')) {
+        el.click();
+      }
+    });
+  }
+
+  function updateTrail() {
+    const now = Date.now();
+    trailPoints = trailPoints.filter(p => now - p.time < 300);
+    const path = trailPoints.map((p, i) =>
+      (i === 0 ? 'M' : 'L') + p.x + ' ' + p.y
+    ).join(' ');
+    trailPath.setAttribute("d", path);
+    requestAnimationFrame(updateTrail);
+  }
+
+  requestAnimationFrame(updateTrail);
+
+  document.addEventListener("mousemove", e => detectSwipe(e.clientX, e.clientY));
+  document.addEventListener("touchmove", e => {
+    const touch = e.touches[0];
+    detectSwipe(touch.clientX, touch.clientY);
+  });
+</script>
+
+</body>
+</html>
