@@ -31,7 +31,7 @@
       position: relative;
       width: 400px;
       height: 100%;
-      background-image: url('img/board.png');
+      background-image: url('board.png');
       background-size: cover;
       background-position: center;
       border-radius: 20px;
@@ -143,12 +143,12 @@
 <audio id="sliceSound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
 <script>
   const fruitList = [
-    { img: 'img/apple.png', type: 'normal' },
-    { img: 'img/banana.png', type: 'normal' },
-    { img: 'img/orange.png', type: 'normal' },
-    { img: 'img/strawberry.png', type: 'normal' },
-    { img: 'img/basket.png', type: 'legendary' },
-    { img: 'img/bomb.png', type: 'bomb' }
+    { img: 'apple.png', type: 'normal' },
+    { img: 'banana.png', type: 'normal' },
+    { img: 'orange.png', type: 'normal' },
+    { img: 'strawberry.png', type: 'normal' },
+    { img: 'basket.png', type: 'legendary' },
+    { img: 'bomb.png', type: 'bomb' }
   ];
   const fallZone = document.getElementById("fallZone");
   const scoreDisplay = document.getElementById("score");
@@ -255,7 +255,7 @@
 
     gameInterval = setInterval(() => {
       createFruit();
-      fallSpeedMultiplier += 0.01; // increase speed gradually
+      fallSpeedMultiplier += 0.01; 
     }, 700);
 
     countdownInterval = setInterval(() => {
