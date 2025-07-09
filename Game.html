@@ -363,7 +363,7 @@
         timeLeft += 2;
       } else if (isBomb) {
         bombSound.currentTime=0;
-        bombSound.play().catch = (e=> console.error('sounderror',e));
+        bombSound.play().catch = (e=> console.error('bomb sound failed',e));
         endGame("💥 You sliced a bomb! Game Over. Score: " + score);
         return;
       } else {
