@@ -251,20 +251,22 @@
 </div>
 <script>
   const fruitList = [
-    { class: 'apple', type: 'normal', img: 'apple.png' },
-    { class: 'banana', type: 'normal', img: 'banana.png' },
-    { class: 'orange', type: 'normal', img: 'orange.png' },
-    { class: 'strawberry', type: 'normal', img: 'strawberry.png' },
-    { class: 'basket', type: 'legendary', img: 'basket.png' },
-    { class: 'bomb', type: 'bomb', img: 'bomb.png' }
+    { class: 'apple', type: 'normal', img: 'img/apple.png' },
+    { class: 'banana', type: 'normal', img: 'img/banana.png' },
+    { class: 'orange', type: 'normal', img: 'img/orange.png' },
+    { class: 'strawberry', type: 'normal', img: 'img/strawberry.png' },
+    { class: 'basket', type: 'legendary', img: 'img/basket.png' },
+    { class: 'bomb', type: 'bomb', img: 'img/bomb.png' }
   ];
   const fallZone = document.getElementById("fallZone");
   const scoreDisplay = document.getElementById("score");
   const timerDisplay = document.getElementById("timer");
   const livesDisplay = document.getElementById("lives");
   const trailPath = document.getElementById("trailPath");
-  const bombSound = new Audio('https://actions.google.com/sounds/v1/explosions/explosion.ogg');
+  const bombSound = new Audio('sounds/bomb.mp3');
   bombSound.volume = 1.0;
+  const sliceSound = new Audio('sounds/slice.mp3');
+  sliceSound.volume=0.6;
 
 
 
@@ -336,12 +338,10 @@
       }
       
       fruit.dataset.sliced = "true";
-      let now = Date.now();
-      let timeDiff = now - lastSliceTime;
-      lastSliceTime = now;
+      
       
       // Create click sound effect
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      /*const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
       
@@ -354,11 +354,12 @@
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
       
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.1);
-      
-      if (isLegendary) {
-        score += 5;
+      oscillator.start();*/
+      let now = Date.now();
+      let timeDiff = now - lastSliceTime;
+      lastSliceTime = now;
+      if (isLegendary){
+        score +=5;
         timeLeft += 2;
       } else if (isBomb) {
         bombSound.currentTime=0;
@@ -369,6 +370,8 @@
         score += timeDiff < 500 ? 2 : 1;
       }
       
+      sliceSound.currentTime = 0;
+      sliceSound.play().catch(e => console.error('Slice sound failed',e))
       scoreDisplay.textContent = "Score: " + score;
       updateTimer();
       fruit.classList.add("sliced");
