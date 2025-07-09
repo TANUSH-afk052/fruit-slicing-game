@@ -251,21 +251,21 @@
 </div>
 <script>
   const fruitList = [
-    { class: 'apple', type: 'normal', img: 'img/apple.png' },
-    { class: 'banana', type: 'normal', img: 'img/banana.png' },
-    { class: 'orange', type: 'normal', img: 'img/orange.png' },
-    { class: 'strawberry', type: 'normal', img: 'img/strawberry.png' },
-    { class: 'basket', type: 'legendary', img: 'img/basket.png' },
-    { class: 'bomb', type: 'bomb', img: 'img/bomb.png' }
+    { class: 'apple', type: 'normal', img: 'apple.png' },
+    { class: 'banana', type: 'normal', img: 'banana.png' },
+    { class: 'orange', type: 'normal', img: 'orange.png' },
+    { class: 'strawberry', type: 'normal', img: 'strawberry.png' },
+    { class: 'basket', type: 'legendary', img: 'basket.png' },
+    { class: 'bomb', type: 'bomb', img: 'bomb.png' }
   ];
   const fallZone = document.getElementById("fallZone");
   const scoreDisplay = document.getElementById("score");
   const timerDisplay = document.getElementById("timer");
   const livesDisplay = document.getElementById("lives");
   const trailPath = document.getElementById("trailPath");
-  const bombSound = new Audio('/bomb.mp3');
+  const bombSound = new Audio('bomb.mp3');
   bombSound.volume = 1.0;
-  const sliceSound = new Audio('/slice.mp3');
+  const sliceSound = new Audio('slice.mp3');
   sliceSound.volume=0.6;
 
 
