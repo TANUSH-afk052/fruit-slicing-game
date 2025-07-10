@@ -23,22 +23,24 @@
     #gameArea {
       position: relative;
       width: 100%;
-      height: 75vh;
+      height: 60vh;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
       border-top: 3px solid #000;
       border-bottom: 3px solid #000;
+      margin-bottom: 40px ;
     }
     #fallZone {
       position: relative;
       width: 400px;
       height: 100%;
-      background: url('board.png') center/cover no repeat;
+      background: url('img/board.png') center/cover no-repeat;
       border-radius: 20px;
       box-shadow: 0 0 20px rgba(0,0,0,0.3);
       overflow: hidden;
+      padding-bottom: 50px;
     }
     #bottomLine {
       position: absolute;
@@ -48,7 +50,6 @@
       height: 6px;
       background: rgba(255, 0, 0, 0.4);
       pointer-events: none;
-      padding-bottom:50px;
     }
     .fruit {
       width: 60px;
@@ -249,24 +250,25 @@
 </div>
 
 
+
 </div>
 <script>
   const fruitList = [
-    { class: 'apple', type: 'normal', img: 'apple.png' },
-    { class: 'banana', type: 'normal', img: 'banana.png' },
-    { class: 'orange', type: 'normal', img: 'orange.png' },
-    { class: 'strawberry', type: 'normal', img: 'strawberry.png' },
-    { class: 'basket', type: 'legendary', img: 'basket.png' },
-    { class: 'bomb', type: 'bomb', img: 'bomb.png' }
+    { class: 'apple', type: 'normal', img: 'img/apple.png' },
+    { class: 'banana', type: 'normal', img: 'img/banana.png' },
+    { class: 'orange', type: 'normal', img: 'img/orange.png' },
+    { class: 'strawberry', type: 'normal', img: 'img/strawberry.png' },
+    { class: 'basket', type: 'legendary', img: 'img/basket.png' },
+    { class: 'bomb', type: 'bomb', img: 'img/bomb.png' }
   ];
   const fallZone = document.getElementById("fallZone");
   const scoreDisplay = document.getElementById("score");
   const timerDisplay = document.getElementById("timer");
   const livesDisplay = document.getElementById("lives");
   const trailPath = document.getElementById("trailPath");
-  const bombSound = new Audio('bomb.mp3');
+  const bombSound = new Audio('sounds/bomb.mp3');
   bombSound.volume = 1.0;
-  const sliceSound = new Audio('slice.mp3');
+  const sliceSound = new Audio('sounds/slice.mp3');
   sliceSound.volume=0.6;
 
 
@@ -364,7 +366,7 @@
         timeLeft += 2;
       } else if (isBomb) {
         bombSound.currentTime=0;
-        bombSound.play().catch(e => console.error('bomb sound failed',e));
+        bombSound.play().catch = (e=> console.error('sounderror',e));
         endGame("💥 You sliced a bomb! Game Over. Score: " + score);
         return;
       } else {
