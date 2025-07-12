@@ -5,226 +5,294 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fruit Slice - base game</title>
   <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: linear-gradient(to bottom, #def3ff, #a2d4f5);
-      overflow: hidden;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-    }
-    h1, #score, #timer, #lives {
-      text-align: center;
-      margin: 0.5em;
-    }
-    #gameArea {
-      position: relative;
-      width: 100%;
-      height: 60vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      border-top: 3px solid #000;
-      border-bottom: 3px solid #000;
-      margin-bottom: 40px ;
-    }
-    #fallZone {
-      position: relative;
-      width: 400px;
-      height: 100%;
-      background: url('img/board.png') center/cover no-repeat;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      overflow: hidden;
-      padding-bottom: 50px;
-    }
-    #bottomLine {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 0, 0, 0.4);
-      pointer-events: none;
-    }
-    .fruit {
-      width: 60px;
-      height: 60px;
-      position: absolute;
-      cursor: pointer;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease-out;
-      will-change: transform, opacity;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-    }
-    
-    .fruit.apple {
-      background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    }
-    .fruit.banana {
-      background: linear-gradient(135deg, #ffeb3b, #fff176);
-      border-radius: 20px 20px 50% 50%;
-    }
-    .fruit.orange {
-      background: linear-gradient(135deg, #ff9800, #ffb74d);
-    }
-    .fruit.strawberry {
-      background: linear-gradient(135deg, #e53935, #ef5350);
-      border-radius: 60% 60% 60% 60% / 60% 60% 40% 40%;
-    }
-    .fruit.basket {
-      background: linear-gradient(135deg, #8b4513, #daa520);
-      border-radius: 10px 10px 50% 50%;
-    }
-    .fruit.bomb {
-      background: linear-gradient(135deg, #212121, #424242);
-      position: relative;
-    }
-    .fruit.bomb::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 3px;
-      height: 12px;
-      background: #8b4513;
-      border-radius: 2px;
-    }
-    .fruit.bomb::after {
-      content: '💥';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 24px;
-    }
-    
-    .legendary {
-      box-shadow: 0 0 15px 5px gold;
-      animation: glow 1s ease-in-out infinite alternate;
-    }
-    
-    @keyframes glow {
-      from { box-shadow: 0 0 10px 2px gold; }
-      to   { box-shadow: 0 0 20px 6px yellow; }
-    }
-    .sliced {
-      transform: scale(1.3) rotate(45deg);
+  body {
+
+    margin: 0;
+    font-family: sans-serif;
+    background: linear-gradient(to bottom, #def3ff, #a2d4f5);
+    overflow-x: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    text-align: center;
+    margin: 0.5em;
+  }
+
+  #score, #timer, #lives {
+    text-align: center;
+    margin: 0.5em;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  #startBtn, #exitBtn {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 25px;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    min-width: 140px;
+    max-width: 200px;
+    width: 30vw;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  #startBtn {
+    background-color: #28a745;
+  }
+  #startBtn:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+  }
+
+  #exitBtn {
+    background-color: #dc3545;
+  }
+  #exitBtn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+  }
+
+  #gameArea {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-top: 3px solid #000;
+    border-bottom: 3px solid #000;
+    margin-bottom: 80px; /* more space for bottom panel */
+  }
+
+  #fallZone {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background: url('img/board.png') center/cover no-repeat;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    overflow: hidden;
+    padding-bottom: 50px;
+  }
+
+  #bottomLine {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 0, 0, 0.4);
+    pointer-events: none;
+  }
+
+  .fruit {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease-out;
+    will-change: transform, opacity;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .fruit.apple {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  }
+  .fruit.banana {
+    background: linear-gradient(135deg, #ffeb3b, #fff176);
+    border-radius: 20px 20px 50% 50%;
+  }
+  .fruit.orange {
+    background: linear-gradient(135deg, #ff9800, #ffb74d);
+  }
+  .fruit.strawberry {
+    background: linear-gradient(135deg, #e53935, #ef5350);
+    border-radius: 60% 60% 60% 60% / 60% 60% 40% 40%;
+  }
+  .fruit.basket {
+    background: linear-gradient(135deg, #8b4513, #daa520);
+    border-radius: 10px 10px 50% 50%;
+  }
+  .fruit.bomb {
+    background: linear-gradient(135deg, #212121, #424242);
+    position: relative;
+  }
+  .fruit.bomb::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 12px;
+    background: #8b4513;
+    border-radius: 2px;
+  }
+  .fruit.bomb::after {
+    content: '💥';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+  }
+
+  .legendary {
+    box-shadow: 0 0 15px 5px gold;
+    animation: glow 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 10px 2px gold; }
+    to   { box-shadow: 0 0 20px 6px yellow; }
+  }
+
+  .sliced {
+    transform: scale(1.3) rotate(45deg);
+    opacity: 0;
+  }
+
+  .splash-drop {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 1;
+    animation: splashAnim 0.5s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes splashAnim {
+    to {
+      transform: translate(var(--x), var(--y)) scale(1.5);
       opacity: 0;
     }
-    .splash-drop {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      opacity: 1;
-      animation: splashAnim 0.5s ease-out forwards;
-      will-change: transform, opacity;
+  }
+
+  #swordTrail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  #gameOverOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  #gameOverBox {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px black;
+  }
+  #gameOverBox h2 {
+    margin-bottom: 20px;
+  }
+  #gameOverBox button {
+    background: #28a745;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1em;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  #gameOverBox button:hover {
+    background: #218838;
+  }
+
+
+  #bottomPanel {
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.1em;
+    border-top: 2px solid #ccc;
+    box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+  }
+
+  #bottomPanel button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #bottomPanel button:hover {
+    background: #0056b3;
+  }
+
+  #bottomPanel footer {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    #fallZone {
+      width: 95%;
     }
-    @keyframes splashAnim {
-      to {
-        transform: translate(var(--x), var(--y)) scale(1.5);
-        opacity: 0;
-      }
+    .fruit {
+      width: 50px;
+      height: 50px;
     }
     #startBtn, #exitBtn {
-      display: inline-block;
-      margin: 10px 10px;
-      padding: 12px 25px;
-      font-size: 1.1em;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-      transition: all 0.2s ease;
+      width: 80%;
+      margin: 10px auto;
+      display: block;
     }
-    #startBtn {
-      background-color: #28a745;
-    }
-    #startBtn:hover {
-      background-color: #218838;
-      transform: scale(1.05);
-    }
-    #exitBtn {
-      background-color: #dc3545;
-    }
-    #exitBtn:hover {
-      background-color: #c82333;
-      transform: scale(1.05);
-    }
-    #swordTrail {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 999;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-    @media (max-width: 768px) {
-      #fallZone {
-        width: 95%;
-      }
-      .fruit {
-        width: 50px;
-        height: 50px;
-      }
-      #startBtn, #exitBtn {
-        width: 90%;
-        margin: 10px auto;
-      }
-    }
-    #gameOverOverlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
+  }
 
-    #gameOverBox {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 0 20px black;
+  @media (max-width: 480px) {
+    .fruit {
+      width: 40px;
+      height: 40px;
     }
-
-    #gameOverBox h2 {
-      margin-bottom: 20px;
+    #bottomPanel {
+      font-size: 0.9em;
     }
-
-    #gameOverBox button {
-      background: #28a745;
-      border: none;
-      padding: 12px 20px;
+    #highScore {
       font-size: 1em;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-    } 
-
-    #gameOverBox button:hover {
-      background: #218838;
     }
+}
 
   </style>
 </head>
@@ -233,8 +301,10 @@
 <div id="score">Score: 0</div>
 <div id="timer">Time Left: 30s</div>
 <div id="lives">Lives: ❤️❤️❤️</div>
+
 <button id="startBtn" onclick="startGame()">Start Game</button>
 <button id="exitBtn" onclick="exitGame()" style="display: none;">Exit Game</button>
+
 <div id="gameArea">
   <div id="fallZone">
     <div id="bottomLine"></div>
@@ -242,12 +312,21 @@
       <path id="trailPath" stroke="red" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
     </svg>
   </div>
+
   <div id="gameOverOverlay" style="display:none;">
     <div id="gameOverBox">
       <h2 id="gameOverMessage"></h2>
       <button onclick="restartGame()">🔁 Restart Game</button>
+    </div>
   </div>
 </div>
+<div id="bottomPanel">
+  <p>🎮 Welcome to Fruit Slice!</p>
+  <button onclick="toggleMusic()">🔈 Toggle Music</button>
+  <div id="highScore">🏆 High Score: 0</div>
+  <footer>Made by Tanush</footer>
+</div>
+
 
 
 
@@ -342,22 +421,6 @@
       
       fruit.dataset.sliced = "true";
       
-      
-      // Create click sound effect
-      /*const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-      
-      oscillator.start();*/
       let now = Date.now();
       let timeDiff = now - lastSliceTime;
       lastSliceTime = now;
@@ -493,6 +556,7 @@
     if (animationId) cancelAnimationFrame(animationId);
     gameRunning = false;
     document.getElementById("exitBtn").style.display = "none";
+    checkAndUpdateHighScore();
 
     document.getElementById("gameOverMessage").textContent = message;
     document.getElementById("gameOverOverlay").style.display = "flex";
@@ -501,6 +565,7 @@
     activeFruits = [];
     trailPoints = [];
   }
+  
 
   function exitGame() {
     if (confirm("Are you sure you want to exit the game?")) {
@@ -570,6 +635,20 @@
   document.getElementById("gameOverOverlay").style.display = "none";
   startGame();
 }
+function updateHighScoreDisplay() {
+  const high = localStorage.getItem("highScore") || 0;
+  document.getElementById("highScore").textContent = "🏆 High Score: " + high;
+}
+
+function checkAndUpdateHighScore() {
+  const saved = localStorage.getItem("highScore") || 0;
+  if (score > saved) {
+    localStorage.setItem("highScore", score);
+    updateHighScoreDisplay();
+  }
+}
+updateHighScoreDisplay();
+
 
 </script>
 </body>
