@@ -2,654 +2,520 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fruit Slice - base game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Fruit Slice - Base Game</title>
   <style>
-  body {
-
-    margin: 0;
-    font-family: sans-serif;
-    background: linear-gradient(to bottom, #def3ff, #a2d4f5);
-    overflow-x: hidden;
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-  }
-
-  h1 {
-    font-size: clamp(1.5rem, 5vw, 3rem);
-    text-align: center;
-    margin: 0.5em;
-  }
-
-  #score, #timer, #lives {
-    text-align: center;
-    margin: 0.5em;
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
-  }
-
-  #startBtn, #exitBtn {
-    display: inline-block;
-    margin: 10px;
-    padding: 12px 25px;
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    color: white;
-    min-width: 140px;
-    max-width: 200px;
-    width: 30vw;
-    text-align: center;
-    transition: all 0.2s ease;
-  }
-
-  #startBtn {
-    background-color: #28a745;
-  }
-  #startBtn:hover {
-    background-color: #218838;
-    transform: scale(1.05);
-  }
-
-  #exitBtn {
-    background-color: #dc3545;
-  }
-  #exitBtn:hover {
-    background-color: #c82333;
-    transform: scale(1.05);
-  }
-
-  #gameArea {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    height: 60vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    border-top: 3px solid #000;
-    border-bottom: 3px solid #000;
-    margin-bottom: 80px; /* more space for bottom panel */
-  }
-
-  #fallZone {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    height: 100%;
-    background: url('img/board.png') center/cover no-repeat;
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    overflow: hidden;
-    padding-bottom: 50px;
-  }
-
-  #bottomLine {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 0, 0, 0.4);
-    pointer-events: none;
-  }
-
-  .fruit {
-    width: 60px;
-    height: 60px;
-    position: absolute;
-    cursor: pointer;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease-out;
-    will-change: transform, opacity;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-  }
-
-  .fruit.apple {
-    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  }
-  .fruit.banana {
-    background: linear-gradient(135deg, #ffeb3b, #fff176);
-    border-radius: 20px 20px 50% 50%;
-  }
-  .fruit.orange {
-    background: linear-gradient(135deg, #ff9800, #ffb74d);
-  }
-  .fruit.strawberry {
-    background: linear-gradient(135deg, #e53935, #ef5350);
-    border-radius: 60% 60% 60% 60% / 60% 60% 40% 40%;
-  }
-  .fruit.basket {
-    background: linear-gradient(135deg, #8b4513, #daa520);
-    border-radius: 10px 10px 50% 50%;
-  }
-  .fruit.bomb {
-    background: linear-gradient(135deg, #212121, #424242);
-    position: relative;
-  }
-  .fruit.bomb::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 3px;
-    height: 12px;
-    background: #8b4513;
-    border-radius: 2px;
-  }
-  .fruit.bomb::after {
-    content: '💥';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-  }
-
-  .legendary {
-    box-shadow: 0 0 15px 5px gold;
-    animation: glow 1s ease-in-out infinite alternate;
-  }
-
-  @keyframes glow {
-    from { box-shadow: 0 0 10px 2px gold; }
-    to   { box-shadow: 0 0 20px 6px yellow; }
-  }
-
-  .sliced {
-    transform: scale(1.3) rotate(45deg);
-    opacity: 0;
-  }
-
-  .splash-drop {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    opacity: 1;
-    animation: splashAnim 0.5s ease-out forwards;
-    will-change: transform, opacity;
-  }
-  @keyframes splashAnim {
-    to {
-      transform: translate(var(--x), var(--y)) scale(1.5);
-      opacity: 0;
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #def3ff, #a2d4f5);
+      overflow-x: hidden;
+      user-select: none;
     }
-  }
-
-  #swordTrail {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 999;
-    border-radius: 20px;
-    overflow: hidden;
-  }
-
-  #gameOverOverlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-
-  #gameOverBox {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 0 20px black;
-  }
-  #gameOverBox h2 {
-    margin-bottom: 20px;
-  }
-  #gameOverBox button {
-    background: #28a745;
-    border: none;
-    padding: 12px 20px;
-    font-size: 1em;
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-  #gameOverBox button:hover {
-    background: #218838;
-  }
-
-
-  #bottomPanel {
-    background: #fff;
-    padding: 20px;
-    text-align: center;
-    font-size: 1.1em;
-    border-top: 2px solid #ccc;
-    box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
-  }
-
-  #bottomPanel button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 1em;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  #bottomPanel button:hover {
-    background: #0056b3;
-  }
-
-  #bottomPanel footer {
-    margin-top: 15px;
-    font-size: 0.9em;
-    color: #555;
-  }
-
-  @media (max-width: 768px) {
-    #fallZone {
-      width: 95%;
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      text-align: center;
+      margin: 0.5em;
     }
-    .fruit {
-      width: 50px;
-      height: 50px;
+    #score, #timer, #lives {
+      text-align: center;
+      margin: 0.5em;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
     }
     #startBtn, #exitBtn {
-      width: 80%;
-      margin: 10px auto;
-      display: block;
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 25px;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      min-width: 140px;
+      max-width: 200px;
+      width: 30vw;
+      text-align: center;
+      transition: all 0.2s ease;
     }
-  }
+    #startBtn { background-color: #28a745; }
+    #startBtn:hover { background-color: #218838; transform: scale(1.05); }
+    #exitBtn { background-color: #dc3545; }
+    #exitBtn:hover { background-color: #c82333; transform: scale(1.05); }
 
-  @media (max-width: 480px) {
+    #gameArea {
+      position: relative;
+      width: 100%;
+      min-height: 75vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-top: 3px solid #000;
+      border-bottom: 3px solid #000;
+      margin-bottom: 80px;
+    }
+    #fallZone {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      min-height: 70vh;
+      background: url('img/board.png') center/cover no-repeat;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
     .fruit {
-      width: 40px;
-      height: 40px;
+      width: 60px;
+      height: 60px;
+      position: absolute;
+      border-radius: 50%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      will-change: transform, opacity;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .fruit.freeze {
+      background: linear-gradient(135deg, #00e5ff, #80d8ff);
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.15); }
+    }
+    .sliced {
+      transform: scale(1.3) rotate(45deg);
+      opacity: 0;
+      transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    }
+    .splash-drop {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      opacity: 1;
+      animation: splashAnim 0.5s ease-out forwards;
+    }
+    @keyframes splashAnim {
+      to {
+        transform: translate(var(--x), var(--y)) scale(1.5);
+        opacity: 0;
+      }
+    }
+    #swordTrail {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #gameOverOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #gameOverBox {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 0 20px black;
+    }
+    #gameOverBox h2 { margin-bottom: 10px; }
+    #gameOverHighScore {
+      font-size: 1.2em;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+    #gameOverBox button {
+      background: #28a745;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1em;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #gameOverBox button:hover {
+      background: #218838;
     }
     #bottomPanel {
-      font-size: 0.9em;
+      background: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.1em;
+      border-top: 2px solid #ccc;
+      box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
     }
-    #highScore {
+    #bottomPanel button {
+      margin-top: 10px;
+      padding: 10px 20px;
       font-size: 1em;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
     }
-}
+    #bottomPanel button:hover { background: #0056b3; }
+    #bottomPanel footer {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    @media (max-width: 768px) {
+      #fallZone { width: 95%; }
+      .fruit { width: 50px; height: 50px; }
+      #startBtn, #exitBtn {
+        width: 80%;
+        margin: 10px auto;
+        display: block;
+      }
+    }
+    @media (max-width: 480px) {
+      .fruit { width: 40px; height: 40px; }
+      #bottomPanel { font-size: 0.9em; }
+      #highScore { font-size: 1em; }
+    }
+    .fruit.legendary {
+      box-shadow: 0 0 15px 5px gold;
+      animation: glow 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 10px 2px gold; }
+      to { box-shadow: 0 0 20px 6px yellow; }
+    }
+
+    .fruit.freeze {
+      background-color: rgba(0, 225, 255, 0.2);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      animation: pulse 1s infinite alternate;
+      box-shadow: 0 0 10px #00e5ff;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.15); }
+    }
+
+    
+    .freeze-trail path {
+      stroke: #00e5ff !important;
+      opacity: 0.9;
+    }
+
 
   </style>
 </head>
 <body>
-<h1>🍓 Fruit Slice base game</h1>
-<div id="score">Score: 0</div>
-<div id="timer">Time Left: 30s</div>
-<div id="lives">Lives: ❤️❤️❤️</div>
-
-<button id="startBtn" onclick="startGame()">Start Game</button>
-<button id="exitBtn" onclick="exitGame()" style="display: none;">Exit Game</button>
-
-<div id="gameArea">
-  <div id="fallZone">
-    <div id="bottomLine"></div>
-    <svg id="swordTrail">
-      <path id="trailPath" stroke="red" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
-    </svg>
-  </div>
-
-  <div id="gameOverOverlay" style="display:none;">
-    <div id="gameOverBox">
-      <h2 id="gameOverMessage"></h2>
-      <button onclick="restartGame()">🔁 Restart Game</button>
+  <h1>🍓 Fruit Slice Final</h1>
+  <div id="score">Score: 0</div>
+  <div id="timer">Time Left: 30s</div>
+  <div id="lives">Lives: ❤️❤️❤️</div>
+  <button id="startBtn" onclick="startGame()">Start Game</button>
+  <button id="exitBtn" onclick="exitGame()" style="display: none;">Exit Game</button>
+  <div id="gameArea">
+    <div id="fallZone">
+      <svg id="swordTrail"><path id="trailPath" stroke="red" stroke-width="4" fill="none" /></svg>
+    </div>
+    <div id="gameOverOverlay" style="display:none;">
+      <div id="gameOverBox">
+        <h2 id="gameOverMessage"></h2>
+        <p id="gameOverHighScore">🏆 High Score: 0</p>
+        <button onclick="restartGame()">🔁 Restart Game</button>
+      </div>
     </div>
   </div>
-</div>
-<div id="bottomPanel">
-  <p>🎮 Welcome to Fruit Slice!</p>
-  <button onclick="toggleMusic()">🔈 Toggle Music</button>
-  <div id="highScore">🏆 High Score: 0</div>
-  <footer>Made by Tanush</footer>
-</div>
+  <div id="bottomPanel">
+    <p>🎮 Welcome to Fruit Slice!</p>
+    <button onclick="toggleMusic()">🔈 Toggle Music</button>
+    <div id="highScore">🏆 High Score: 0</div>
+    <footer>Made by Tanush</footer>
+  </div>
+  <!-- JavaScript comes next -->
+  <script>
+    const fruitList = [
+  { class: 'apple', type: 'normal', img: 'img/apple.png' },
+  { class: 'banana', type: 'normal', img: 'img/banana.png' },
+  { class: 'orange', type: 'normal', img: 'img/orange.png' },
+  { class: 'strawberry', type: 'normal', img: 'img/strawberry.png' },
+  { class: 'basket', type: 'legendary', img: 'img/basket.png' },
+  { class: 'bomb', type: 'bomb', img: 'img/bomb.png' },
+  { class: 'freeze', type: 'freeze', img: 'img/freeze.png' }
+];
 
+const fallZone = document.getElementById("fallZone");
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
+const livesDisplay = document.getElementById("lives");
+const trailPath = document.getElementById("trailPath");
 
+//const bgMusic = new Audio("sounds/bg.mp3");
+//bgMusic.loop = true;
+//bgMusic.volume = 0.4;
+const sliceSound = new Audio("sounds/slice.mp3");
+sliceSound.volume = 0.6;
+const bombSound = new Audio("sounds/bomb.mp3");
 
+let score = 0, timeLeft = 30, lives = 3, gameRunning = false;
+let trailPoints = [], activeFruits = [], fallSpeedMultiplier = 1;
+let gameInterval, countdownInterval, animationId;
 
-</div>
-<script>
-  const fruitList = [
-    { class: 'apple', type: 'normal', img: 'img/apple.png' },
-    { class: 'banana', type: 'normal', img: 'img/banana.png' },
-    { class: 'orange', type: 'normal', img: 'img/orange.png' },
-    { class: 'strawberry', type: 'normal', img: 'img/strawberry.png' },
-    { class: 'basket', type: 'legendary', img: 'img/basket.png' },
-    { class: 'bomb', type: 'bomb', img: 'img/bomb.png' }
-  ];
-  const fallZone = document.getElementById("fallZone");
-  const scoreDisplay = document.getElementById("score");
-  const timerDisplay = document.getElementById("timer");
-  const livesDisplay = document.getElementById("lives");
-  const trailPath = document.getElementById("trailPath");
-  const bombSound = new Audio('sounds/bomb.mp3');
-  bombSound.volume = 1.0;
-  const sliceSound = new Audio('sounds/slice.mp3');
-  sliceSound.volume=0.6;
+function toggleMusic() {
+  bgMusic.paused ? bgMusic.play() : bgMusic.pause();
+}
 
+function updateTimer() {
+  timerDisplay.textContent = "Time Left: " + timeLeft + "s";
+}
+function updateLives() {
+  livesDisplay.textContent = "Lives: " + "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+}
 
+function createFruit() {
+  const fruit = document.createElement("div");
+  fruit.classList.add("fruit");
 
-
-
-  let score = 0;
-  let timeLeft = 30;
-  let lives = 3;
-  let gameInterval, countdownInterval;
-  let gameRunning = false;
-  let lastSliceTime = 0;
-  let trailPoints = [];
-  let fallSpeedMultiplier = 1;
-  let activeFruits = [];
-  let animationId;
-
-  function updateTimer() {
-    timerDisplay.textContent = "Time Left: " + timeLeft + "s";
+  let chosen;
+  if (Math.random() < 0.08) {
+    chosen = fruitList.find(f => f.type === 'freeze');
+  } else {
+    const pool = fruitList.filter(f => f.type !== 'freeze');
+    chosen = pool[Math.floor(Math.random() * pool.length)];
   }
 
-  function updateLives() {
-    const hearts = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
-    livesDisplay.textContent = "Lives: " + hearts;
+  fruit.classList.add(chosen.class);
+  fruit.dataset.type = chosen.type;
+  fruit.style.backgroundImage = `url(${chosen.img})`;
+  fruit.dataset.sliced = "false";
+  if (chosen.type === 'legendary') {
+  fruit.classList.add('legendary');
   }
 
-  function createFruit() {
-    const fruit = document.createElement("div");
-    fruit.classList.add("fruit");
-    const chosen = fruitList[Math.floor(Math.random() * fruitList.length)];
-    const isLegendary = chosen.type === 'legendary';
-    const isBomb = chosen.type === 'bomb';
-    
-    fruit.classList.add(chosen.class);
-    fruit.dataset.type = chosen.type;
-    fruit.style.backgroundImage = `url(${chosen.img})`;
-    fruit.style.backgroundSize = "contain";
-    fruit.style.backgroundRepeat = "no-repeat";
-    fruit.style.backgroundPosition = "center";
-    fruit.textContent = "";
 
-    
-    if (isLegendary) fruit.classList.add("legendary");
-    fruit.dataset.sliced = "false";
-    
-    const leftPosition = Math.random() * (fallZone.clientWidth - 60);
-    fruit.style.left = leftPosition + "px";
-    fruit.style.top = "-60px";
-    fruit.style.display = "block";
-    fruit.style.opacity = "1";
-    
-    let fallSpeed = (Math.random() * 2 + 2) * fallSpeedMultiplier;
-    
-    const fruitData = {
-      element: fruit,
-      fallSpeed: fallSpeed,
-      position: { x: leftPosition, y: -60 },
-      id: Date.now() + Math.random()
-    };
-    
-    activeFruits.push(fruitData);
-    fallZone.appendChild(fruit);
+  const left = Math.random() * (fallZone.clientWidth - 60);
+  fruit.style.left = left + "px";
+  fruit.style.top = "-60px";
+  fallZone.appendChild(fruit);
 
-    function slice(event) {
-      if (fruit.dataset.sliced === "true") return;
-      
-      if (event) {
-        event.stopPropagation();
-        event.preventDefault();
-      }
-      
-      fruit.dataset.sliced = "true";
-      
-      let now = Date.now();
-      let timeDiff = now - lastSliceTime;
-      lastSliceTime = now;
-      if (isLegendary){
-        score +=5;
-        timeLeft += 2;
-      } else if (isBomb) {
-        bombSound.currentTime=0;
-        bombSound.play().catch = (e=> console.error('sounderror',e));
-        endGame("💥 You sliced a bomb! Game Over. Score: " + score);
-        return;
-      } else {
-        score += timeDiff < 500 ? 2 : 1;
-      }
-      
-      sliceSound.currentTime = 0;
-      sliceSound.play().catch(e => console.error('Slice sound failed',e))
-      scoreDisplay.textContent = "Score: " + score;
-      updateTimer();
-      fruit.classList.add("sliced");
-      
-      const left = parseFloat(fruit.style.left);
-      const top = parseFloat(fruit.style.top);
-      createSplash(left + 30, top + 30, isLegendary ? 'gold' : isBomb ? 'black' : 'red');
-      
-      const fruitIndex = activeFruits.findIndex(f => f.element === fruit);
-      if (fruitIndex !== -1) {
-        activeFruits.splice(fruitIndex, 1);
-      }
-      
-      setTimeout(() => {
-        if (fruit.parentNode) {
-          fruit.remove();
+  const speed = (Math.random() * 2 + 2) * fallSpeedMultiplier;
+  const id = Date.now() + Math.random();
+  const data = { element: fruit, fallSpeed: speed, position: { x: left, y: -60 }, id };
+  activeFruits.push(data);
+
+  fruit.addEventListener("click", () => sliceFruit(fruit, data));
+  fruit.addEventListener("touchstart", () => sliceFruit(fruit, data));
+}
+
+function sliceFruit(fruit, data) {
+  if (fruit.dataset.sliced === "true") return;
+  fruit.dataset.sliced = "true";
+  fruit.classList.add("sliced");
+
+  const type = fruit.dataset.type;
+  const now = Date.now();
+  let timeDiff = now - (window.lastSliceTime || now);
+  window.lastSliceTime = now;
+
+  if (type === "freeze") {
+    activeFruits.forEach(f => f._backupSpeed = f.fallSpeed);
+    activeFruits.forEach(f => f.fallSpeed = 0);
+    setTimeout(() => {
+      activeFruits.forEach(f => f.fallSpeed = f._backupSpeed || 2);
+    }, 5000);
+  } else if (type === "bomb") {
+    bombSound.play();
+    return endGame("💥 You sliced a bomb! Game Over. Score: " + score);
+  } else if (type === "legendary") {
+    score += 5;
+    timeLeft += 6;
+  } else {
+    score += (timeDiff < 500 ? 2 : 1);
+  }
+
+  sliceSound.currentTime = 0;
+  sliceSound.play();
+  scoreDisplay.textContent = "Score: " + score;
+
+  createSplash(parseFloat(fruit.style.left) + 30, parseFloat(fruit.style.top) + 30, type === "legendary" ? "gold" : "red");
+  setTimeout(() => fruit.remove(), 150);
+}
+
+function animateFruits() {
+  for (let i = activeFruits.length - 1; i >= 0; i--) {
+    const f = activeFruits[i];
+    if (!f.element || f.element.dataset.sliced === "true") {
+      activeFruits.splice(i, 1);
+      continue;
+    }
+
+    f.position.y += f.fallSpeed;
+    const drift = Math.sin(Date.now() / 200 + f.id) * 1.5;
+    f.element.style.left = (parseFloat(f.element.style.left) + drift) + "px";
+    f.element.style.top = f.position.y + "px";
+
+    if (f.position.y > fallZone.clientHeight - 60) {
+      if (["normal", "legendary"].includes(f.element.dataset.type)) {
+        lives--;
+        updateLives();
+        if (lives <= 0) {
+          return endGame("💔 No more lives! Game Over. Score: " + score);
         }
-      }, 150);
-    }
-
-    fruit.addEventListener("click", slice);
-    fruit.addEventListener("touchstart", slice);
-    fruit.addEventListener("slice", (e) => slice(e.detail));
-  }
-
-  function animateFruits() {
-    for (let i = activeFruits.length - 1; i >= 0; i--) {
-      const fruitData = activeFruits[i];
-      
-      if (!fruitData.element || !fruitData.element.parentNode || fruitData.element.dataset.sliced === "true") {
-        activeFruits.splice(i, 1);
-        continue;
       }
-      
-      fruitData.position.y += fruitData.fallSpeed;
-      const horizontalDrift = Math.sin(Date.now() / 200 + fruitData.id) * 1.5;
-      fruitData.element.style.left = (parseFloat(fruitData.element.style.left) + horizontalDrift) + "px";      
-      fruitData.element.style.top = fruitData.position.y + "px";
-      
-      if (fruitData.position.y >= fallZone.clientHeight - fruitData.element.offsetHeight) {
-        const fruitType = fruitData.element.dataset.type;
-        
-        if (fruitType === 'normal' || fruitType === 'legendary') {
-          lives--;
-          updateLives();
-          
-          if (lives <= 0) {
-            endGame("💔 No more lives! Game Over. Score: " + score);
-            return;
-          }
-        }
-        
-        fruitData.element.remove();
-        activeFruits.splice(i, 1);
-      }
-    }
-    
-    if (gameRunning) {
-      animationId = requestAnimationFrame(animateFruits);
+      f.element.remove();
+      activeFruits.splice(i, 1);
     }
   }
 
-  function createSplash(x, y, color) {
-    for (let i = 0; i < 10; i++) {
-      const drop = document.createElement("div");
-      drop.classList.add("splash-drop");
-      drop.style.background = color;
-      drop.style.left = `${x}px`;
-      drop.style.top = `${y}px`;
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * 50 + 10;
-      const dx = Math.cos(angle) * distance;
-      const dy = Math.sin(angle) * distance;
-      drop.style.setProperty('--x', `${dx}px`);
-      drop.style.setProperty('--y', `${dy}px`);
-      fallZone.appendChild(drop);
-      setTimeout(() => drop.remove(), 500);
-    }
-  }
+  if (gameRunning) animationId = requestAnimationFrame(animateFruits);
+}
 
-  function startGame() {
-    if (gameRunning) return;
-    gameRunning = true;
-    score = 0;
-    timeLeft = 30;
-    lives = 3;
-    lastSliceTime = 0;
-    trailPoints = [];
-    fallSpeedMultiplier = 1;
-    activeFruits = [];
+function createSplash(x, y, color) {
+  for (let i = 0; i < 10; i++) {
+    const drop = document.createElement("div");
+    drop.classList.add("splash-drop");
+    drop.style.background = color;
+    drop.style.left = `${x}px`;
+    drop.style.top = `${y}px`;
+    const angle = Math.random() * 2 * Math.PI;
+    const dist = Math.random() * 50 + 10;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist;
+    drop.style.setProperty("--x", `${dx}px`);
+    drop.style.setProperty("--y", `${dy}px`);
+    fallZone.appendChild(drop);
+    setTimeout(() => drop.remove(), 500);
+  }
+}
+
+function startGame() {
+  if (gameRunning) return;
+  score = 0; timeLeft = 30; lives = 3;
+  fallSpeedMultiplier = 1;
+  updateTimer(); updateLives();
+  gameRunning = true;
+  scoreDisplay.textContent = "Score: 0";
+  document.getElementById("exitBtn").style.display = "inline-block";
+
+  gameInterval = setInterval(() => {
+    createFruit();
+    fallSpeedMultiplier += 0.01;
+  }, 700);
+
+  countdownInterval = setInterval(() => {
+    timeLeft--;
     updateTimer();
-    updateLives();
-    scoreDisplay.textContent = "Score: 0";
-    document.getElementById("exitBtn").style.display = "inline-block";
-
-    gameInterval = setInterval(() => {
-      createFruit();
-      fallSpeedMultiplier += 0.01;
-    }, 700);
-
-    countdownInterval = setInterval(() => {
-      timeLeft--;
-      updateTimer();
-      if (timeLeft <= 0) {
-        clearInterval(countdownInterval);
-        endGame("⏰ Time's up! Your score: " + score);
-      }
-    }, 1000);
-    
-    animateFruits();
-  }
-
-  function endGame(message) {
-    clearInterval(gameInterval);
-    clearInterval(countdownInterval);
-    if (animationId) cancelAnimationFrame(animationId);
-    gameRunning = false;
-    document.getElementById("exitBtn").style.display = "none";
-    checkAndUpdateHighScore();
-
-    document.getElementById("gameOverMessage").textContent = message;
-    document.getElementById("gameOverOverlay").style.display = "flex";
-
-    [...document.querySelectorAll('.fruit')].forEach(f => f.remove());
-    activeFruits = [];
-    trailPoints = [];
-  }
-  
-
-  function exitGame() {
-    if (confirm("Are you sure you want to exit the game?")) {
-      endGame("Game exited. Your score: " + score);
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      endGame("⏰ Time's up! Score: " + score);
     }
-  }
+  }, 1000);
 
-  function detectSwipe(x, y) {
-    const rect = fallZone.getBoundingClientRect();
-    const relativeX = x - rect.left;
-    const relativeY = y - rect.top;
-    
-    if (relativeX >= 0 && relativeX <= rect.width && relativeY >= 0 && relativeY <= rect.height) {
-      trailPoints.push({ x: relativeX, y: relativeY, time: Date.now() });
-      
-      const elements = document.elementsFromPoint(x, y);
-      elements.forEach(el => {
-        if (el.classList.contains('fruit') && 
-            el.dataset.sliced !== "true" && 
-            el.parentNode && 
-            getComputedStyle(el).display !== 'none') {
-          const syntheticEvent = { stopPropagation: () => {}, preventDefault: () => {} };
-          el.dispatchEvent(new CustomEvent('slice', { detail: syntheticEvent }));
-        }
-      });
-    }
-  }
+  animateFruits();
+}
 
-  function updateTrail() {
-    const now = Date.now();
-    trailPoints = trailPoints.filter(p => now - p.time < 200);
-    
-    if (trailPoints.length > 1) {
-      const path = trailPoints.map((p, i) => (i === 0 ? 'M' : 'L') + p.x + ' ' + p.y).join(' ');
-      trailPath.setAttribute("d", path);
-    } else {
-      trailPath.setAttribute("d", "");
-    }
-    
-    requestAnimationFrame(updateTrail);
-  }
+function endGame(message) {
+  clearInterval(gameInterval);
+  clearInterval(countdownInterval);
+  cancelAnimationFrame(animationId);
+  gameRunning = false;
+  document.getElementById("exitBtn").style.display = "none";
 
-  requestAnimationFrame(updateTrail);
-  
-  let isMouseDown = false;
-  
-  document.addEventListener("mousedown", () => isMouseDown = true);
-  document.addEventListener("mouseup", () => isMouseDown = false);
-  document.addEventListener("mousemove", e => {
-    if (isMouseDown) {
-      detectSwipe(e.clientX, e.clientY);
-    }
-  });
-  
-  document.addEventListener("touchstart", e => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    detectSwipe(touch.clientX, touch.clientY);
-  });
-  
-  document.addEventListener("touchmove", e => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    detectSwipe(touch.clientX, touch.clientY);
-  });
-  function restartGame() {
+  checkAndUpdateHighScore();
+  document.getElementById("gameOverMessage").textContent = message;
+  document.getElementById("gameOverHighScore").textContent = "🏆 High Score: " + (localStorage.getItem("highScore") || 0);
+  document.getElementById("gameOverOverlay").style.display = "flex";
+
+  activeFruits.forEach(f => f.element.remove());
+  activeFruits = [];
+  trailPoints = [];
+}
+
+function restartGame() {
   document.getElementById("gameOverOverlay").style.display = "none";
   startGame();
 }
+
+function exitGame() {
+  if (confirm("Exit the game?")) {
+    endGame("Game exited. Score: " + score);
+  }
+}
+
 function updateHighScoreDisplay() {
   const high = localStorage.getItem("highScore") || 0;
   document.getElementById("highScore").textContent = "🏆 High Score: " + high;
 }
-
 function checkAndUpdateHighScore() {
-  const saved = localStorage.getItem("highScore") || 0;
-  if (score > saved) {
+  const high = localStorage.getItem("highScore") || 0;
+  if (score > high) {
     localStorage.setItem("highScore", score);
     updateHighScoreDisplay();
   }
 }
 updateHighScoreDisplay();
 
+function detectSwipe(x, y) {
+  const rect = fallZone.getBoundingClientRect();
+  const relX = x - rect.left;
+  const relY = y - rect.top;
 
-</script>
+  if (relX >= 0 && relX <= rect.width && relY >= 0 && relY <= rect.height) {
+    trailPoints.push({ x: relX, y: relY, time: Date.now() });
+
+    const elements = document.elementsFromPoint(x, y);
+    elements.forEach(el => {
+      if (el.classList.contains("fruit") && el.dataset.sliced !== "true") {
+        el.click(); 
+      }
+    });
+  }
+}
+
+
+function updateTrail() {
+  const now = Date.now();
+  trailPoints = trailPoints.filter(p => now - p.time < 200);
+  if (trailPoints.length > 1) {
+    const path = trailPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x} ${p.y}`).join(' ');
+    trailPath.setAttribute("d", path);
+  } else {
+    trailPath.setAttribute("d", "");
+  }
+  requestAnimationFrame(updateTrail);
+}
+updateTrail();
+
+let isMouseDown = false;
+document.addEventListener("mousedown", () => isMouseDown = true);
+document.addEventListener("mouseup", () => isMouseDown = false);
+document.addEventListener("mousemove", e => {
+  if (isMouseDown) detectSwipe(e.clientX, e.clientY);
+});
+document.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  detectSwipe(touch.clientX, touch.clientY);
+});
+document.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  detectSwipe(touch.clientX, touch.clientY);
+});
+
+  </script>
 </body>
 </html>
