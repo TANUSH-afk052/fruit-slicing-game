@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Fruit Slice - Base Game</title>
   <style>
-    body {
+    html, body {
+      min-height: 100dvh;
       margin: 0;
-      font-family: sans-serif;
-      background: linear-gradient(to bottom, #def3ff, #a2d4f5);
-      overflow-x: hidden;
+      padding: 0;
+      overflow: auto;
+      overscroll-behavior-y: none;
+      touch-action: none;
       user-select: none;
+      background-color: #00e5ff;
     }
+
     h1 {
       font-size: clamp(1.5rem, 5vw, 3rem);
       text-align: center;
@@ -43,27 +47,28 @@
     #exitBtn:hover { background-color: #c82333; transform: scale(1.05); }
 
     #gameArea {
-      position: relative;
       width: 100%;
-      min-height: 75vh;
+      height: 80dvh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 0;
       overflow: hidden;
-      border-top: 3px solid #000;
-      border-bottom: 3px solid #000;
-      margin-bottom: 80px;
     }
+
     #fallZone {
-      position: relative;
       width: 100%;
-      max-width: 500px;
-      min-height: 70vh;
-      background: url('img/board.png') center/cover no-repeat;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 420px;
+      height: 80dvh;
+      background-image: url('img/board.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 8px;
       overflow: hidden;
+      position: relative;
     }
+
     .fruit {
       width: 60px;
       height: 60px;
