@@ -24,6 +24,7 @@ This is a fruit slicing game I built using **HTML, CSS, and JavaScript**. Inspir
 - Animated glow for legendary fruits
 - Smooth splash effects
 - Responsive layout for all devices
+- Blue background
 
 ## Demo
 
